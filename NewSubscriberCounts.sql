@@ -17,11 +17,11 @@ subscriptionInfo AS (
          length AS Plan,
          CASE WHEN a.iam IS NULL THEN 'Student' ELSE a.iam END AS UserCategory,
          b.Region AS Market,
-         a.device_id AS UserID
+         CASE WHEN a.device_id IS NULL THEN '123' ELSE a.device_id END AS UserID
   FROM `erudite-idea-777.analytics_151921982.sub_length_iam_breakdown` a
-  JOIN `erudite-idea-777.analytics_151921982.country_code_mapping` c
+  LEFT JOIN `erudite-idea-777.analytics_151921982.country_code_mapping` c
     ON CASE WHEN LENGTH(a.country) = 2 THEN c.Alpha_2_code ELSE c.Alpha_3_code END = a.country
-  JOIN `erudite-idea-777.Zane_BTSDashboard.CountryRegion` b
+  LEFT JOIN `erudite-idea-777.Zane_BTSDashboard.CountryRegion` b
     ON c.country = b.Country
   WHERE event_name = 'Conversions'
 )
@@ -30,6 +30,6 @@ SELECT Date,
        Market,
        UserCategory,
        Plan,
-       COUNT(DISTINCT UserID) AS Count
+       COUNT(UserID) AS Count
 FROM subscriptionInfo
 GROUP BY Date, Market, UserCategory, Plan
