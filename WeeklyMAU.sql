@@ -20,23 +20,24 @@ historicalDAU AS (
   JOIN `erudite-idea-777.Zane_BTSDashboard.CountryRegion` c
     ON h.country = c.Country
   WHERE CountUserEngagement > 0
+    AND Date >= '2020-12-01'
 ),
 
 dates AS (
   SELECT Date
   FROM UNNEST(
-    GENERATE_DATE_ARRAY(DATE('2021-01-01'), DATE('2022-12-31'), INTERVAL 1 DAY)
+    GENERATE_DATE_ARRAY(DATE('2021-01-01'), DATE('2022-12-31'), INTERVAL 7 DAY)
   ) Date
 ),
 
 eventsWithDate AS (
-  SELECT DATE_SUB(historicalDAU.EventDate, INTERVAL EXTRACT(DAYOFWEEK FROM historicalDAU.EventDate) - 1 day) AS EventDate,
+  SELECT dates.Date AS EventDate,
          historicalDAU.Market,
          historicalDAU.UserID
   FROM historicalDAU
   JOIN dates
-    ON DATE_DIFF(historicalDAU.EventDate, dates.Date, DAY) <= 30
-   AND DATE_DIFF(historicalDAU.EventDate, dates.Date, DAY) >= 0
+    ON DATE_DIFF(dates.Date, historicalDAU.EventDate, DAY) <= 30
+   AND DATE_DIFF(dates.Date, historicalDAU.EventDate, DAY) >= 0
 ),
 
 MAU2022 AS (
@@ -64,15 +65,11 @@ TargetMAU2022 AS (
   FROM MAU2021
 )
 
-SELECT dates.Date AS Date,
+SELECT DATE_ADD(TargetMAU2022.EventDate, INTERVAL 1 YEAR) AS Date,
        MAU2022.Market,
        MAU2022.ActualMAU,
        TargetMAU2022.TargetMAU
-FROM (
-  SELECT Date FROM Dates WHERE EXTRACT(YEAR FROM Date) = 2022
-) AS dates
-JOIN TargetMAU2022
-  ON EXTRACT(DAYOFYEAR FROM dates.Date) = EXTRACT(DAYOFYEAR FROM TargetMAU2022.EventDate)
+FROM TargetMAU2022
 LEFT JOIN MAU2022
-  ON EXTRACT(WEEK FROM TargetMAU2022.EventDate) = EXTRACT(WEEK FROM MAU2022.EventDate)
- AND TargetMAU2022.Market = MAU2022.Market
+  ON EXTRACT(WEEK FROM MAU2022.EventDate) = EXTRACT(WEEK FROM TargetMAU2022.EventDate)
+ AND MAU2022.Market = TargetMAU2022.Market
