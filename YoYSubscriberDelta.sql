@@ -1,14 +1,14 @@
 /*
 New Subscriber Counts by User Category and Market
 
-Date (week) | Market | UserCategory | Plan | Count
---------------------------------------------------
-...         | ...    | ...          | ...  | ...
+Date | Market | UserCategory | Plan | YoYDelta
+----------------------------------------------
+...  | ...    | ...          | ...  | ...
 
 Dashboard: https://datastudio.google.com/reporting/b0ea098f-343e-4e50-8e3d-6dee640c0167
 */
 
-CREATE OR REPLACE TABLE `erudite-idea-777.Zane_BTSDashboard.NewSubscriberCounts` AS
+CREATE OR REPLACE TABLE `erudite-idea-777.Zane_BTSDashboard.NewSubscriberYearDelta` AS
 
 WITH
 
@@ -55,7 +55,7 @@ SELECT data2022.Date,
        data2022.Market,
        data2022.UserCategory,
        data2022.Plan,
-       (data2022.Count - data2021.Count) / data2021.Count AS YoY
+       (data2022.Count - data2021.Count) / data2021.Count AS YoYDelta
 FROM data2022
 JOIN data2021
   ON EXTRACT(DAYOFYEAR FROM data2022.Date) = EXTRACT(DAYOFYEAR FROM data2021.Date)
