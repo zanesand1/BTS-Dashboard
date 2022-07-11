@@ -1,5 +1,5 @@
 /*
-New Subscriber Counts by User Category and Market
+YoYDelta for new subscribers from 2022 compared to 2021
 
 Date | Market | UserCategory | Plan | YoYDelta
 ----------------------------------------------
@@ -13,7 +13,7 @@ CREATE OR REPLACE TABLE `erudite-idea-777.Zane_BTSDashboard.NewSubscriberYearDel
 WITH
 
 subscriptionInfo AS (
-  SELECT event_date AS Date,
+  SELECT DATE_SUB(event_date, INTERVAL EXTRACT(DAYOFWEEK from event_date) - 1 DAY) AS Date, 
          length AS Plan,
          CASE WHEN a.iam IS NULL THEN 'Student' ELSE a.iam END AS UserCategory,
          b.Region AS Market,
@@ -58,7 +58,7 @@ SELECT data2022.Date,
        (data2022.Count - data2021.Count) / data2021.Count AS YoYDelta
 FROM data2022
 JOIN data2021
-  ON EXTRACT(DAYOFYEAR FROM data2022.Date) = EXTRACT(DAYOFYEAR FROM data2021.Date)
+  ON EXTRACT(WEEK FROM data2022.Date) = EXTRACT(WEEK FROM data2021.Date)
  AND data2022.Market = data2021.Market
  AND data2022.UserCategory = data2021.UserCategory
  AND data2022.Plan = data2021.Plan
