@@ -31,6 +31,6 @@ SELECT Date,
        Market,
        UserCategory,
        Plan,
-       COUNT(DISTINCT UserID) AS Count
+       COUNT(UserID) AS Count
 FROM subscriptionInfo
 GROUP BY Date, Market, UserCategory, Plan
