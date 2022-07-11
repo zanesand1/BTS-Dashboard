@@ -13,7 +13,7 @@ CREATE OR REPLACE TABLE `erudite-idea-777.Zane_BTSDashboard.NewSubscriberCounts`
 WITH
 
 subscriptionInfo AS (
-  SELECT LAST_DAY(event_date, WEEK(Saturday)) AS Date,
+  SELECT event_date AS Date,
          length AS Plan,
          CASE WHEN a.iam IS NULL THEN 'Student' ELSE a.iam END AS UserCategory,
          b.Region AS Market,
@@ -24,12 +24,13 @@ subscriptionInfo AS (
   LEFT JOIN `erudite-idea-777.Zane_BTSDashboard.CountryRegion` b
     ON c.country = b.Country
   WHERE event_name = 'Conversions'
+    AND event_date >= '2022-01-01'
 )
 
 SELECT Date,
        Market,
        UserCategory,
        Plan,
-       COUNT(UserID) AS Count
+       COUNT(DISTINCT UserID) AS Count
 FROM subscriptionInfo
 GROUP BY Date, Market, UserCategory, Plan
