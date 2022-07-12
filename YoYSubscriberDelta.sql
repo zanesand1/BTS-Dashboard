@@ -8,7 +8,7 @@ Date | Market | UserCategory | Plan | YoYDelta
 Dashboard: https://datastudio.google.com/reporting/b0ea098f-343e-4e50-8e3d-6dee640c0167
 */
 
-CREATE OR REPLACE TABLE `erudite-idea-777.Zane_BTSDashboard.NewSubscriberYearDelta` AS
+CREATE OR REPLACE TABLE `erudite-idea-777.Zane_BTSDashboard.YoYSubscriberDelta` AS
 
 WITH
 
