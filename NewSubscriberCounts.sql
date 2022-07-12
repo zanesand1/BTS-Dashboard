@@ -17,7 +17,7 @@ subscriptionInfo AS (
          length AS Plan,
          CASE WHEN a.iam IS NULL THEN 'Student' ELSE a.iam END AS UserCategory,
          b.Region AS Market,
-         CASE WHEN a.device_id IS NULL THEN '123' ELSE a.device_id END AS UserID
+         CASE WHEN a.device_id IS NULL THEN GENERATE_UUID() ELSE a.device_id END AS UserID
   FROM `erudite-idea-777.analytics_151921982.sub_length_iam_breakdown` a
   LEFT JOIN `erudite-idea-777.analytics_151921982.country_code_mapping` c
     ON CASE WHEN LENGTH(a.country) = 2 THEN c.Alpha_2_code ELSE c.Alpha_3_code END = a.country
@@ -31,6 +31,6 @@ SELECT Date,
        Market,
        UserCategory,
        Plan,
-       COUNT(UserID) AS Count
+       COUNT(DISTINCT UserID) AS Count
 FROM subscriptionInfo
 GROUP BY Date, Market, UserCategory, Plan
