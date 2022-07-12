@@ -1,9 +1,9 @@
 /*
 Monthly Active Users by Week
 
-Date (week) | Market | ActualMAU | TargetMAU
---------------------------------------------
-...         | ...    | ...       | ...
+Date | Market | ActualMAU | TargetMAU
+-------------------------------------
+...  | ...    | ...       | ...
 
 Dashboard: https://datastudio.google.com/reporting/b0ea098f-343e-4e50-8e3d-6dee640c0167
 */
@@ -66,7 +66,7 @@ TargetMAU2022 AS (
 )
 
 SELECT DATE_ADD(TargetMAU2022.EventDate, INTERVAL 1 YEAR) AS Date,
-       MAU2022.Market,
+       TargetMAU2022.Market,
        MAU2022.ActualMAU,
        TargetMAU2022.TargetMAU
 FROM TargetMAU2022
