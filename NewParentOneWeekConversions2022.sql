@@ -1,4 +1,7 @@
 /*
+Table to pull whether or not a parent has converted within 2 weeks of install & 
+the average conversion rate for parents during BTS season last year (2021).
+
 Date | Market | Converted | Goal
 --------------------------------
 ...  | ...    | ...       | ...
