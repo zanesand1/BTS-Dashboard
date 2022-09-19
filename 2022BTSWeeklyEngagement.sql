@@ -61,6 +61,17 @@ userCategory AS (
   LEFT JOIN resurrectedUsers ON users.UserID = resurrectedUsers.UserID
 ),
 
+numberScansNoSolution AS (
+  SELECT user_id,
+         COUNT(*) AS num
+  FROM `erudite-idea-777.analytics_151921982.events_*`
+  WHERE _TABLE_SUFFIX BETWEEN _begin_str AND _end_str
+    AND user_id IN (SELECT UserID FROM users)
+    AND event_name = 'CameraButtonError'
+    AND (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'ErrorType') = 'OutOfScope'
+  GROUP BY user_id
+),
+
 events AS (
   SELECT user_id,
          event_name,
@@ -68,7 +79,7 @@ events AS (
   FROM `erudite-idea-777.analytics_151921982.events_*`
   WHERE _TABLE_SUFFIX BETWEEN _begin_str AND _end_str
     AND user_id IN (SELECT UserID FROM users)
-    AND event_name IN ('SolutionShow', 'SolutionButtonClick')
+    AND event_name IN ('SolutionShow', 'SolutionButtonClick', 'CameraResultShow')
 ),
 
 event_counts AS (
@@ -86,7 +97,8 @@ return AS (
         userCategory.country AS Country,
         MAX(event_counts.count_sessions) AS NumOfSession,
         MAX(CASE WHEN event_counts.event_name = 'SolutionShow' THEN event_counts.event_count END) AS SolutionShow,
-        MAX(CASE WHEN event_counts.event_name = 'SolutionButtonClick' THEN event_counts.event_count END) AS SolutionButtonClick
+        MAX(CASE WHEN event_counts.event_name = 'SolutionButtonClick' THEN event_counts.event_count END) AS SolutionButtonClick,
+        MAX(CASE WHEN event_counts.event_name = 'CameraResultShow' THEN event_counts.event_count END) AS CameraResultShow
   FROM userCategory
   LEFT JOIN event_counts ON userCategory.user_id = event_counts.user_id
   GROUP BY userCategory.user_id, userCategory.category, userCategory.country
@@ -96,6 +108,9 @@ SELECT UserID,
        Category,
        Country,
        IFNULL(NumOfSession, 0) AS NumOfSession,
-       IFNULL(SolutionShow, 0) AS SolutionShow,
-       IFNULL(SolutionButtonClick, 0) AS SolutionButtonClick
+       IFNULL(SolutionShow, 0) AS NumOfSolutionShow,
+       IFNULL(SolutionButtonClick, 0) AS NumOfSolutionButtonClick,
+       IFNULL(CameraResultShow, 0) AS NumOfCameraResultShow,
+       IFNULL(numberScansNoSolution.num, 0) AS NumOfCameraNoResultShow
 FROM return
+LEFT JOIN numberScansNoSolution ON return.UserID = numberScansNoSolution.user_id
